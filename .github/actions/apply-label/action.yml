@@ -1,5 +1,5 @@
-name: 'Apply Label Backend'
-description: 'Applys the label based on an artifact, so we can label things from weird places'
+name: 'Apply Label From Artifact'
+description: 'Applies the label based on an artifact, so we can label things from weird places'
 
 runs:
   using: "composite"
