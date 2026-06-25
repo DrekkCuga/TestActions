@@ -4,17 +4,20 @@ on:
   pull_request_review:
     types: [submitted]
 
+env:
+  LABEL: "S: Approved"
+  PR_NO: ${{ github.event.pull_request.number }}
+
 jobs:
-  detect-approval:
+  # We don't have permissions to add labels for PRs from a fork, so create the artifact and wait for the other flow to grab it
+  fork-approval:
     if: github.event.review.state == 'approved' && github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
-    env:
-      LABEL: "S: Approved"
     steps:
       - name: Save PR context
         run: |
           mkdir -p ./pr
-          echo "${{ github.event.pull_request.number }}" > ./pr/NR
+          echo "$PR_NO" > ./pr/NR
           echo "$LABEL" > ./pr/LABEL
       
       - name: Upload PR number
@@ -23,3 +26,14 @@ jobs:
           name: pr-approval-${{ github.run_id }}
           path: pr/
           retention-days: 1
+
+  # For PRs from local branches, we don't need to do all that shit
+  branch-approval:
+    if: github.event.review.state == 'approved' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add Label
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: gh pr edit "$PR_NO" --add-label "$LABEL"
