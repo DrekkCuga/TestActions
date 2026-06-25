@@ -17,6 +17,7 @@ jobs:
       contents: read
       issues: write
       pull-requests: write
+    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
     - name: Add approved label
@@ -29,6 +30,9 @@ jobs:
         gh api --method POST "repos/$REPO/issues/$PR_NUMBER/labels" \
           --field labels[]="S: Approved"
 
+  print_secret:
+    runs-on: ubuntu-latest
+    steps:
     - name: Print Test Secret
       run: |
         echo {{ secrets.TEST_REPO_SEC }}
