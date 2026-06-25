@@ -1,6 +1,11 @@
 name: 'Apply Label From Artifact'
 description: 'Applies the label based on an artifact, so we can label things from weird places'
 
+outputs:
+  pr_num:
+    description: "The PR Number"
+    value: ${{ steps.pr_data.outputs.pr_num }}
+
 runs:
   using: "composite"
   steps:
